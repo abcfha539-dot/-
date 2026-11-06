@@ -1,0 +1,6 @@
+(function(){
+ const TYPES=window.NOVA_APPLICATION_TYPES||[];
+ async function request(){const r=await fetch('api/application-settings.php',{credentials:'same-origin',cache:'no-store'});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'تعذر تحميل حالة التقديمات');return d.settings||{};}
+ window.NOVA_APP_STORE={TYPES,settings:request};
+ document.addEventListener('DOMContentLoaded',async()=>{try{const settings=await request();document.querySelectorAll('[data-application-card]').forEach(card=>{const slug=card.getAttribute('data-app-type');const opened=!!(settings[slug]&&settings[slug].open);const badge=card.querySelector('[data-app-status]');if(opened){card.href='application-form.html?type='+encodeURIComponent(slug);card.classList.remove('disabled');card.setAttribute('aria-disabled','false');if(badge){badge.textContent='مفتوح';badge.className='badge badge-light-success mt-2'}}else{card.href='#';card.classList.add('disabled');card.setAttribute('aria-disabled','true');if(badge){badge.textContent='مغلق';badge.className='badge badge-light-danger mt-2'}}card.addEventListener('click',e=>{if(card.getAttribute('aria-disabled')==='true'){e.preventDefault();alert('هذا التقديم مغلق حاليًا.')}});});}catch(e){console.error(e);}});
+})();
